@@ -185,6 +185,7 @@ class BaseLang
        var $iready  = "on valmis";
        var $noolalla  = "▾";
        var $supcode = "Hankijakood";
+       var $desc = "Kirjeldus";
 
        var $kassa = "Kassa";
        var $closecash = "Vahetus";

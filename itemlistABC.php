@@ -73,7 +73,7 @@
 
          $itemForm->showAddInventLink ( 1 );
 
-         echo $itemForm->getHTML ( $myLang , $_REQUEST, "itemlist.php" );
+         echo $itemForm->getHTML ( $myLang , $_REQUEST, "itemlistABC.php" );
 
          $iItemSearchVersion = 0;
          $sWhere = "";
@@ -89,17 +89,19 @@
 
           echo '<br> <br><br> <table align="left" border="1" cellpadding="3" cellspacing="0">';
 
-            echo '<tr><th>'.$myLang->Grupp.'</th><th>'.$myLang->Nr.'</th><th>'.$myLang->Ribakood.'</th><th>'.$myLang->Nimetus.'</th><th>'.$myLang->Ost.'</th><th>'.$myLang->Hind.'</th><th>'.$myLang->Laoseis.'</th>';
+            echo '<tr><th>'.$myLang->Grupp.'</th><th>'.$myLang->Nr.'</th><th>'.$myLang->Ribakood.'</th><th>'.$myLang->supcode.'</th><th>'.$myLang->Nimetus.'</th><th>'.$myLang->desc.'</th><th>'.$myLang->Ost.'</th><th>'.$myLang->Hind.'</th><th>'.$myLang->Laoseis.'</th>';
 
            if ( $my_set->iUnits == 1 ) echo '<th>'.$myLang->Yhik.'</th>';
 
 
             if ( $iShowBron == 1 )   echo '<th>'.$myLang->Bron.'</th><th>'.$myLang->Ostutellimus.'</th>';
 
-            if ( $iBufId> -1 )   echo '<th><a href="buflist.php?bjnr='.$iBufId.'" target="_blank">'. ($itemForm->m_sBufComment).'</a></th>';
+            // if ( $iBufId> -1 ) {
+            //   echo '<th><a href="buflist.php?bjnr='.$iBufId.'" target="_blank">'. ($itemForm->m_sBufComment).'</a></th>';
+            // }
 
             if (  $iShowPlace ==1  )  echo '<th>'.$myLang->Paigutus.'</th>';
-
+            echo '<th>'.$myLang->Pilt.'</th>';
             echo '</tr> ';
 
 
@@ -110,37 +112,26 @@
             //  echo '<td><a href="itemcard.php?id='.$aItemsDetails[$i]['ID'].'" style="text-decoration: none;" target="_blank" >'. ($aItemsDetails[$i]['REFERENCE']).'</a></td>';
               echo '<td>'. ($aItemsDetails[$i]['REFERENCE']).'</td>';
               echo '<td>'. ($aItemsDetails[$i]['CODE']).'</td>';
+              echo '<td>'. ($aItemsDetails[$i]['HANKIJAKOOD']).'</td>';
 
               if ( isset ( $aItemsDetails[$i]['RETSITEM'] ) )  $sNclass = ' class="rets" ';
               else  $sNclass = '';
 
               echo '<td'.$sNclass.'>'. htmlspecialchars($aItemsDetails[$i]['NAME']).'</td>';
+              $desc = $aItemsDetails[$i]['ProdDescription'];
+              if(strlen($desc)>20){
+                $desc = substr($desc, 0, 20).'...';
+              }
+              echo '<td>'.htmlspecialchars($desc).'</td>';
               echo '<td align="right">'.MyHind( $aItemsDetails[$i]['PRICEBUY']).'</td>';
               echo '<td align="right">'.MyHind($aItemsDetails[$i]['PRICESELL'] * (1.00 + $aItemsDetails[$i]['RATE'] )   ).'</td>';
               echo '<td align="right"><a href="stockcard.php?id='.$aItemsDetails[$i]['ID'].'&stock='.$itemForm->m_sLocation.'"  target="_blank" >'.MyHind( $aItemsDetails[$i]['UNITS'], 2 ).'</a></td>';
 
-              if ( $my_set->iUnits == 1 ) echo '<td >'.htmlspecialchars( $aItemsDetails[$i]['UNAME']).'</td>';
 
-              if (   $iShowBron==1  )
-              {
-                   echo '<td align="right"><a href="stockcard.php?id='.$aItemsDetails[$i]['ID'].'&stock='.$itemForm->m_sLocation.'&mode=1"  target="_blank" >'.MyHind( $aItemsDetails[$i]['CUSTOFFER'], 2 ).'</a></td>';
-                   echo '<td align="right"><a href="stockcard.php?id='.$aItemsDetails[$i]['ID'].'&stock='.$itemForm->m_sLocation.'&mode=2"  target="_blank" >'.MyHind( $aItemsDetails[$i]['SUPORDER'], 2 ).'</a></td>';
+              // if ( $iBufId> -1 ) {
+              //   echo '<td></td>';
+              // }
 
-
-
-              }
-
-
-              if ( $iBufId > -1  )
-              {
-                   $sMinusBut = '<img src="./images/minus_button.png" class="item_qty_minus_pic" onclick="chng_buf_qty( 1, \''.$aItemsDetails[$i]['REFERENCE'].'\' , '.$iBufId.')" >';
-
-
-                  echo '<td align="center"><div class="buf_qty_cell" >'.$sMinusBut;
-                  echo '<span class="buf_qty" id="bq'.$aItemsDetails[$i]['REFERENCE'].'">'.$aItemsDetails[$i]['BUFUNITS'].'</span>';
-                  echo '<img src="./images/plus_button.png" class="item_qty_plus_pic" onclick="chng_buf_qty( 2, \''.$aItemsDetails[$i]['REFERENCE'].'\' , '.$iBufId.' )" >';
-                  echo '</div></td>';
-              }
 
               if (  $iShowPlace ==1  ) echo '<td>'. ($aItemsDetails[$i]['PLACE']).'</td>';
 
@@ -154,6 +145,13 @@
               }
 
                */
+
+               if(isset($aItemsDetails[$i]['IMAGECODE']) && strlen($aItemsDetails[$i]['IMAGECODE'])>0){
+                 echo '<td> <img style="height:70px; width:auto" src="'  .getPrestoImageUrl ( $my_set->webserver, $aItemsDetails[$i]['IMAGECODE'] ) .'"/></td>';
+               }else{
+                 echo '<td> </td>';
+               }
+
 
               echo '</tr>';
            }

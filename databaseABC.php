@@ -163,7 +163,7 @@ class myDB {
            return $aRet;
      }
 
-     function GetKaubad ( $id, $iSI, $sWhere = "",  $sOrderBy = "", $sLocation="0",  $iBufJnr=-1, $iShowPlace=0 , $iShowBron=0, $iShowOrder=0,  $iOrderBufId=-1 , $iLimit = 2000 )
+     function GetKaubad ( $id, $iSI, $sWhere = "",  $sOrderBy = "", $sLocation="0",  $iBufJnr=-1, $iShowPlace=0 , $iShowBron=0, $iShowOrder=0,  $iOrderBufId=-1 , $iLimit = 200 )
      {
 
         if ( $iLimit > 0 ) $sSqlLimit = " LIMIT ".$iLimit." ";
@@ -215,14 +215,26 @@ class myDB {
 
 
 
-         $sSql =  "SELECT a.ID, a.REFERENCE, a.CODE, a.NAME, a.PRICEBUY, a.PRICESELL, a.CATEGORY, a.TAXCAT, a.ATTRIBUTESET_ID, a.STOCKCOST, a.STOCKVOLUME, a.ISCOM, a.ISSCALE, a.ATTRIBUTES, t.RATE, c.NAME as CATEGORYNAME, ".$sSqlUnits." ". $sSqlBron.$sSqlBufVal.$sSqlPlace.$sSqlMinMax ;
-         $sSql .= ", ( SELECT LINENO FROM RETSEPT WHERE RETSEPT_PRODUCT = a.ID LIMIT 1 ) as RETSITEM, ";
-         $sSql .= " (CONVERT( ExtractValue ( a.ATTRIBUTES , '/properties//entry[@key=\"pant\"]' ) USING utf8)) as PANTPLU, ";
-         $sSql .= " (CONVERT( ExtractValue ( a.ATTRIBUTES , '/properties//entry[@key=\"koef\"]' ) USING utf8)) as PANTKOEF,  u.UNIT AS UNAME ";
-         $sSql .= " FROM PRODUCTS a  ";
-         $sSql .= "left join TAXES t on t.CATEGORY = a.TAXCAT ";
-         $sSql .= "left join UNITS u on u.PRODUCT = a.ID AND u.ISDEFAULT= 1 ";
-         $sSql .= "left join CATEGORIES c on c.ID = a.CATEGORY ".$sSqlBufJoin.$sBronJoin;
+         // $sSql =  "SELECT a.ID, a.REFERENCE, a.CODE, a.NAME, a.PRICEBUY, a.PRICESELL, a.CATEGORY, a.TAXCAT, a.ATTRIBUTESET_ID, a.STOCKCOST, a.STOCKVOLUME, a.ISCOM, a.ISSCALE, a.ATTRIBUTES, t.RATE, c.NAME as CATEGORYNAME, ".$sSqlUnits." ". $sSqlBron.$sSqlBufVal.$sSqlPlace.$sSqlMinMax ;
+         // $sSql .= ", ( SELECT LINENO FROM RETSEPT WHERE RETSEPT_PRODUCT = a.ID LIMIT 1 ) as RETSITEM, ";
+         // $sSql .= " (CONVERT( ExtractValue ( a.ATTRIBUTES , '/properties//entry[@key=\"pant\"]' ) USING utf8)) as PANTPLU, ";
+         // $sSql .= " (CONVERT( ExtractValue ( a.ATTRIBUTES , '/properties//entry[@key=\"koef\"]' ) USING utf8)) as PANTKOEF,  u.UNIT AS UNAME ";
+         // $sSql .= " FROM PRODUCTS a  ";
+         // $sSql .= "left join TAXES t on t.CATEGORY = a.TAXCAT ";
+         // $sSql .= "left join UNITS u on u.PRODUCT = a.ID AND u.ISDEFAULT= 1 ";
+         // $sSql .= "left join CATEGORIES c on c.ID = a.CATEGORY ".$sSqlBufJoin.$sBronJoin;
+
+
+
+            $sSql =  " SELECT a.ID, a.REFERENCE, a.CODE, a.NAME, a.PRICEBUY, a.PRICESELL, a.CATEGORY, a.TAXCAT, a.ATTRIBUTESET_ID, a.STOCKCOST, a.STOCKVOLUME, a.ATTRIBUTES, " ;
+            $sSql .=     "( SELECT c.NAME from CATEGORIES c WHERE c.ID = a.CATEGORY) as CATEGORYNAME, ";
+            $sSql .=     "( SELECT SUM( CAST( UNITS AS DECIMAL(10,4) ) ) FROM STOCKCURRENT WHERE PRODUCT = a.ID ) AS STOCKUNITS ,(CONVERT( ExtractValue ( a.ATTRIBUTES , '/properties//entry[@key=\"koht\"]' ) USING utf8)) as PLACE, ";
+            $sSql .=    " ( SELECT h.CODE FROM PRCODES h WHERE h.ID = a.ID and h.CODELIST = 3 LIMIT 1 ) as HANKIJAKOOD, ";
+            $sSql .=     "(SELECT i.CODE from PRCODES i where i.ID = a.ID and i.CODELIST = 3) as IMAGECODE , ";
+            $sSql .=     "( SELECT q.LONGDESC from PRODUCTS_MSG q where q.PRODUCT = a.ID and q.JNR =1 ) as ProdDescription, ";
+            $sSql .=     "( Select t.RATE from TAXES t WHERE t.CATEGORY = a.TAXCAT) as RATE ";
+            $sSql .=     "FROM PRODUCTS a ";
+          //  $sSql .=     "order by a.NAME LIMIT 200 ";
 
 
 
@@ -233,12 +245,11 @@ class myDB {
          else if ( $iSI == 3 ) {  $sSql .= $sWhere;  }
 
          if ( ( $iSI == 3 ) && (strlen( $sOrderBy ) > 5  ))   $sSql .=  $sOrderBy;
-         else $sSql .= "order by c.NAME, a.NAME";
+         else $sSql .= "order by CATEGORYNAME, a.NAME";
 
-          $sSql .= $sSqlLimit;
+         $sSql .= $sSqlLimit;
 
      echo $sSql.'<br>';
-
        $iCount = 0;
 
        $this->m_sth = $this->m_mysqli->query( $sSql );
@@ -253,47 +264,20 @@ class myDB {
             $aRet[$iCount]['PRICESELL']   =   $row['PRICESELL'];
             $aRet[$iCount]['CATEGORY']    =   $row['CATEGORY'];
             $aRet[$iCount]['TAXCAT']      =   $row['TAXCAT'];
+            $aRet[$iCount]['HANKIJAKOOD']      =   $row['HANKIJAKOOD'];
+            $aRet[$iCount]['ProdDescription']      =   $row['ProdDescription'];
             $aRet[$iCount]['ATTRIBUTESET_ID']    =   $row['ATTRIBUTESET_ID'];
             $aRet[$iCount]['STOCKCOST']     =   $row['STOCKCOST'];
             $aRet[$iCount]['STOCKVOLUME']   =   $row['STOCKVOLUME'];
-            $aRet[$iCount]['ISCOM']         =   $row['ISCOM'];
-            $aRet[$iCount]['ISSCALE']       =   $row['ISSCALE'];
             $aRet[$iCount]['ATTRIBUTES']    =   $row['ATTRIBUTES'];
             $aRet[$iCount]['RATE']          =   $row['RATE'];
             $aRet[$iCount]['CATEGORYNAME']  =   $row['CATEGORYNAME'];
             $aRet[$iCount]['UNITS']         =   $row['STOCKUNITS'];
+            $aRet[$iCount]['IMAGECODE']         =   $row['IMAGECODE'];
 
-            if  ( $iBufJnr < 0 ) $aRet[$iCount]['BUFUNITS']  = 0 ;
-            else  $aRet[$iCount]['BUFUNITS']  = $row['BUFUNITS'] ;
 
             if  ( $iShowPlace == 1)  $aRet[$iCount]['PLACE']    =   $row['PLACE'];
             else $aRet[$iCount]['PLACE']    ='';
-
-            if  ( $iShowBron == 1)
-            {
-               $aRet[$iCount]['CUSTOFFER']   =  $row['CUSTOFFER'];
-               $aRet[$iCount]['SUPORDER']    =  $row['SUPORDER'];
-            }
-            else
-            {
-               $aRet[$iCount]['CUSTOFFER']   =  0;
-               $aRet[$iCount]['SUPORDER']    =  0;
-            }
-
-            if ( $iShowOrder == 1 )
-            {
-               $aRet[$iCount]['STMIN']   = $row['STMIN'];
-               $aRet[$iCount]['STMAX']    = $row['STMAX'];
-               if ( $iOrderBufId > -1 )  $aRet[$iCount]['TOORDER'] = $row['TOORDER'];
-               else  $aRet[$iCount]['TOORDER'] = "";
-            }
-
-            $aRet[$iCount]['RETSITEM']  = $row['RETSITEM'];
-            $aRet[$iCount]['PANTPLU']  = $row['PANTPLU'];
-            $aRet[$iCount]['PANTKOEF']  = $row['PANTKOEF'];
-            $aRet[$iCount]['UNAME']  = $row['UNAME'];
-
-
             $iCount ++;
          }
 
@@ -301,6 +285,33 @@ class myDB {
 
       return $aRet;
      }
+
+     function GetImage($itemId){
+
+        $sSql = "SELECT IMAGE FROM PRODUCTS where ID =".$this->MyVarchar($itemId);
+
+        $this->m_sth = $this->m_mysqli->query( $sSql );
+
+       if  ( $row = $this->m_sth->fetch_assoc()  )
+       {
+          file_put_contents('saal.jpg', $row['IMAGE']);
+       }
+
+     }
+
+     function GetImgBLOB($itemId){
+
+        $sSql = "SELECT IMAGE FROM PRODUCTS where ID =".$this->MyVarchar($itemId);
+
+        $this->m_sth = $this->m_mysqli->query( $sSql );
+
+       if  ( $row = $this->m_sth->fetch_assoc()  )
+       {
+          return $row['IMAGE'];
+       }
+
+     }
+
 
      function close (  ) {  $this->m_mysqli->close(  ); }
 
