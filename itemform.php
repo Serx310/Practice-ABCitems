@@ -20,7 +20,7 @@ var $m_sLocation = "0";
 var $m_iShowOrderBuf = 0;
 var $m_iShowSuplCode = 0;
 
-var $m_iLimit = 200;
+var $m_iLimit = 2000;
 
 var $m_aGroupList;
 var $m_sWhere = "";
@@ -78,7 +78,7 @@ function setStockList ( $aStockList,  $sTargetStock )
 function setGroupList  ( $aGroupList  ,  $req )
 {
     if ( ( isset ( $req['limit'] ) )  && ( strlen($req['limit']) >0 ) )   $this->m_iLimit = $req['limit'] ;
-    else  $this->m_iLimit = 200;
+    else  $this->m_iLimit = 2000;
 
     $this->m_aGroupList = $aGroupList ;
 

@@ -163,7 +163,7 @@ class myDB {
            return $aRet;
      }
 
-     function GetKaubad ( $id, $iSI, $sWhere = "",  $sOrderBy = "", $sLocation="0",  $iBufJnr=-1, $iShowPlace=0 , $iShowBron=0, $iShowOrder=0,  $iOrderBufId=-1 , $iLimit = 200 )
+     function GetKaubad ( $id, $iSI, $sWhere = "",  $sOrderBy = "", $sLocation="0",  $iBufJnr=-1, $iShowPlace=0 , $iShowBron=0, $iShowOrder=0,  $iOrderBufId=-1 , $iLimit = 2000 )
      {
 
         if ( $iLimit > 0 ) $sSqlLimit = " LIMIT ".$iLimit." ";
@@ -234,6 +234,7 @@ class myDB {
             $sSql .=     "( SELECT q.LONGDESC from PRODUCTS_MSG q where q.PRODUCT = a.ID and q.JNR =1 ) as ProdDescription, ";
             $sSql .=     "( Select t.RATE from TAXES t WHERE t.CATEGORY = a.TAXCAT) as RATE ";
             $sSql .=     "FROM PRODUCTS a ";
+            $sSql .=      " left join CATEGORIES c on c.ID = a.CATEGORY ";
           //  $sSql .=     "order by a.NAME LIMIT 200 ";
 
 
@@ -245,7 +246,7 @@ class myDB {
          else if ( $iSI == 3 ) {  $sSql .= $sWhere;  }
 
          if ( ( $iSI == 3 ) && (strlen( $sOrderBy ) > 5  ))   $sSql .=  $sOrderBy;
-         else $sSql .= "order by CATEGORYNAME, a.NAME";
+         else $sSql .= "order by a.NAME";
 
          $sSql .= $sSqlLimit;
 

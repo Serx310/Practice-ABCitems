@@ -9,6 +9,7 @@
     ini_set("session.use_trans_sid", true );
          session_name("miskus");
          session_start();
+         print_r($_REQUEST);
 
         if  (!isset($_SESSION['USERCODE']))
         {
@@ -61,6 +62,7 @@
          $itemForm->setStockList ( $aStockList , $sTargetStock ) ;
 
          $aGroupList = $my_db->GetGroupList ();
+         if  ( !isset ( $_REQUEST['limit'] ) )  $_REQUEST['limit'] = 200 ;
          $itemForm->setGroupList ( $aGroupList,  $_REQUEST ) ;
 
         /////////////////////////////////////////////////////////////////
@@ -75,6 +77,9 @@
 
          echo $itemForm->getHTML ( $myLang , $_REQUEST, "itemlistABC.php" );
 
+
+
+
          $iItemSearchVersion = 0;
          $sWhere = "";
          $sOrderBy = "";
@@ -86,10 +91,22 @@
 
           $aItemsDetails = $my_db->GetKaubad (null , $iItemSearchVersion , $sWhere, $sOrderBy, $itemForm->m_sLocation , $iBufId, $iShowPlace, $iShowBron,  0, -1,  $itemForm->m_iLimit  );
 
+          if ( isset ( $_REQUEST['sortby'] ) )    $iSortBy = $_REQUEST['sortby'];
+          else                                    $iSortBy = 0;
+
+          echo $itemForm->m_sInvParam;
 
           echo '<br> <br><br> <table align="left" border="1" cellpadding="3" cellspacing="0">';
-
-            echo '<tr><th>'.$myLang->Grupp.'</th><th>'.$myLang->Nr.'</th><th>'.$myLang->Ribakood.'</th><th>'.$myLang->supcode.'</th><th>'.$myLang->Nimetus.'</th><th>'.$myLang->desc.'</th><th>'.$myLang->Ost.'</th><th>'.$myLang->Hind.'</th><th>'.$myLang->Laoseis.'</th>';
+          echo '<tr>';
+            echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=0" >'.$myLang->Grupp.'</a></th>';
+            echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=1" >'.$myLang->Nr.'</a></th>';
+            echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=2" >'.$myLang->Ribakood. '</a></th>';
+            echo  '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=3" >'.$myLang->supcode. '</a></th>';
+            echo  '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=4" >'.$myLang->Nimetus.'</a></th>';
+            echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=5" >'.$myLang->desc.'</a></th>';
+          echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=6" >'.$myLang->Ost.'</a></th>';
+          echo  '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=7" >'.$myLang->Hind.'</a></th>';
+          echo  '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=8" >'.$myLang->Laoseis.'</a></th>';
 
            if ( $my_set->iUnits == 1 ) echo '<th>'.$myLang->Yhik.'</th>';
 
@@ -100,7 +117,7 @@
             //   echo '<th><a href="buflist.php?bjnr='.$iBufId.'" target="_blank">'. ($itemForm->m_sBufComment).'</a></th>';
             // }
 
-            if (  $iShowPlace ==1  )  echo '<th>'.$myLang->Paigutus.'</th>';
+            if (  $iShowPlace ==1  )  echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'"sortby=0">'.$myLang->Paigutus.'</a></th>';
             echo '<th>'.$myLang->Pilt.'</th>';
             echo '</tr> ';
 
