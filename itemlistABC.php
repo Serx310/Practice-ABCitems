@@ -86,27 +86,58 @@
 
          if ( strlen($itemForm->m_sWhere) >0 ) { $sWhere = ' where 1=1 '.$itemForm->m_sWhere;  $iItemSearchVersion = 3; }
 
+      /*   $a_cat_columns = array('ryhm', 'nr', 'ribakood', 'kood', 'hkood', 'nimi', 'kirjeldus', 'ost', 'hind', 'laoseis');
+         $column = isset($_GET['column']) && in_array($_GET['column'], $a_cat_columns) ? $_GET['column'] : $a_cat_columns[0];*/
+         $sort_order = isset($_GET['order']) && strtolower($_GET['order']) == 'desc' ? 'DESC' : 'ASC';
+         $up_or_down = str_replace(array('ASC','DESC'), array('up','down'), $sort_order);
+         $asc_or_desc = $sort_order == 'ASC' ? 'desc' : 'asc';
+         $add_class = ' class="highlight"';
+         $column = $_GET['column'];
+         echo 'Parameter for sorting '.$column;
+
+         echo '</br>';
 
 
+         if($_GET['column']=='nimi'){
+           $sOrderBy="order by a.NAME";
+         }else if($_GET['column']=='ryhm'){
+           $sOrderBy="order by CATEGORYNAME";
+         }else if($_GET['column']=='nr'){
+           $sOrderBy="order by a.REFERENCE";
+         }else if($_GET['column']=='ribakood'){
+           $sOrderBy="order by a.CODE";
+         }else if($_GET['column']=='hkood'){
+           $sOrderBy="order by HANKIJAKOOD";
+         }else if($_GET['column']=='kirjeldus'){
+           $sOrderBy="order by ProdDescription";
+         }else if($_GET['column']=='ost'){
+           $sOrderBy="order by a.PRICEBUY";
+         }else if($_GET['column']=='hind'){
+           $sOrderBy="order by a.PRICESELL";
+         }else if($_GET['column']=='laoseis'){
+           $sOrderBy="order by a.STOCKVOLUME";
+         }
 
+          echo 'Parameter for sorting '.$sOrderBy;
+           echo '</br>';
           $aItemsDetails = $my_db->GetKaubad (null , $iItemSearchVersion , $sWhere, $sOrderBy, $itemForm->m_sLocation , $iBufId, $iShowPlace, $iShowBron,  0, -1,  $itemForm->m_iLimit  );
-
-          if ( isset ( $_REQUEST['sortby'] ) )    $iSortBy = $_REQUEST['sortby'];
-          else                                    $iSortBy = 0;
 
           echo $itemForm->m_sInvParam;
 
+
+
+
           echo '<br> <br><br> <table align="left" border="1" cellpadding="3" cellspacing="0">';
           echo '<tr>';
-            echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=0" >'.$myLang->Grupp.'</a></th>';
-            echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=1" >'.$myLang->Nr.'</a></th>';
-            echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=2" >'.$myLang->Ribakood. '</a></th>';
-            echo  '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=3" >'.$myLang->supcode. '</a></th>';
-            echo  '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=4" >'.$myLang->Nimetus.'</a></th>';
-            echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=5" >'.$myLang->desc.'</a></th>';
-          echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=6" >'.$myLang->Ost.'</a></th>';
-          echo  '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=7" >'.$myLang->Hind.'</a></th>';
-          echo  '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&sortby=8" >'.$myLang->Laoseis.'</a></th>';
+            echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&column=ryhm&order=<?php echo $asc_or_desc; ?>">'.$myLang->Grupp.'</a></th>';
+            echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&column=nr&order=<?php echo $asc_or_desc; ?>">'.$myLang->Nr.'</a></th>';
+            echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&column=ribakood&order=<?php echo $asc_or_desc; ?>" >'.$myLang->Ribakood. '</a></th>';
+            echo  '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&column=hkood&order=<?php echo $asc_or_desc; ?>" >'.$myLang->supcode. '</a></th>';
+            echo  '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&column=nimi&order=<?php echo $asc_or_desc; ?>">'.$myLang->Nimetus.'</a></th>';
+            echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&column=kirjeldus&order=<?php echo $asc_or_desc; ?>" >'.$myLang->desc.'</a></th>';
+          echo '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&column=ost&order=<?php echo $asc_or_desc; ?>" >'.$myLang->Ost.'</a></th>';
+          echo  '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&column=hind&order=<?php echo $asc_or_desc; ?>">'.$myLang->Hind.'</a></th>';
+          echo  '<th><a href="itemlistABC.php?'.$itemForm->m_sInvParam.'&column=laoseis&order=<?php echo $asc_or_desc; ?>" >'.$myLang->Laoseis.'</a></th>';
 
            if ( $my_set->iUnits == 1 ) echo '<th>'.$myLang->Yhik.'</th>';
 

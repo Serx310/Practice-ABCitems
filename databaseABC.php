@@ -245,8 +245,10 @@ class myDB {
          else if ( $iSI == 2 ) {  $sSql .= " where a.REFERENCE = '".$id."' ";  }
          else if ( $iSI == 3 ) {  $sSql .= $sWhere;  }
 
-         if ( ( $iSI == 3 ) && (strlen( $sOrderBy ) > 5  ))   $sSql .=  $sOrderBy;
+
+         if  (strlen( $sOrderBy ) > 5  )   $sSql .=  $sOrderBy;
          else $sSql .= "order by a.NAME";
+      
 
          $sSql .= $sSqlLimit;
 
@@ -315,5 +317,8 @@ class myDB {
 
 
      function close (  ) {  $this->m_mysqli->close(  ); }
+
+
+
 
 }
